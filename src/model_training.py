@@ -5,7 +5,7 @@ import os
 import logging
 import pandas as pd
 import numpy as np
-
+import yaml
 
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -27,9 +27,26 @@ file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
-def build_cnn_model(vocab_size,max_len):
+def load_params(params_path:str)->dict:
+    "Load params from params.yaml file"
+    try:
+        with open(params_path,"r") as f:
+            params=yaml.safe_load(f)
+        logger.debug("Parameters retrieved %s",params_path)
+        return params
+    except FileNotFoundError as e:
+        logger.error("File not found %s",e)
+        raise
+    except yaml.YAMLError as e:
+        logger.error("Yaml error: %s",e)
+        raise
+    except Exception as e:
+        logger.error("Unexpected error occurred:%s",e)
+        raise
+
+def build_cnn_model(vocab_size,output_dim,input_length):
     model=Sequential()
-    model.add(Embedding(input_dim=vocab_size,output_dim=100,input_length=max_len))
+    model.add(Embedding(input_dim=vocab_size,output_dim=output_dim,input_length=input_length))
     model.add(Conv1D(filters=128,kernel_size=5,activation="relu"))
     model.add(GlobalMaxPooling1D())
     model.add(Dense(units=64,activation="relu"))
@@ -47,9 +64,12 @@ def train_model():
         y_train=np.load("artifacts/y_train.npy")
         y_test=np.load("artifacts/y_test.npy")
         
-        vocab_size=5000
-        max_len=100
-        model=build_cnn_model(vocab_size=vocab_size,max_len=max_len)
+        params=load_params(params_path="params.yaml")
+        vocab_size=params["model_training"]["vocab_size"]
+        output_dim=params["model_training"]["output_dim"]
+        input_length=params["model_training"]["max_len"]
+    
+        model=build_cnn_model(vocab_size,output_dim,input_length)
         logger.debug("Model run successfully !")
         
         #Early stopping

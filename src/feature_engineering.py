@@ -5,7 +5,7 @@ import pandas as pd
 from keras.utils import pad_sequences 
 import pickle
 import numpy as np
-
+import yaml
 
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -27,6 +27,23 @@ file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
+def load_params(params_path:str)->dict:
+    "Load params from params.yaml file"
+    try:
+        with open(params_path,"r") as f:
+            params=yaml.safe_load(f)
+        logger.debug("Parameters retrieved %s",params_path)
+        return params
+    except FileNotFoundError as e:
+        logger.error("File not found %s",e)
+        raise
+    except yaml.YAMLError as e:
+        logger.error("Yaml error: %s",e)
+        raise
+    except Exception as e:
+        logger.error("Unexpected error occurred:%s",e)
+        raise
+
 def load_data(file_path:str)->pd.DataFrame:
     try:
         df=pd.read_csv(file_path)
@@ -42,7 +59,7 @@ def load_data(file_path:str)->pd.DataFrame:
         logger.error("Unexpected error occurred %s",e)
         raise
     
-def token(train_data:pd.DataFrame, test_data:pd.DataFrame,num_words:int=5000,max_len:int=100,tokenizer_path:str="artifacts/tokenizer.pkl"):
+def token(train_data:pd.DataFrame, test_data:pd.DataFrame,num_words,max_len,tokenizer_path:str="artifacts/tokenizer.pkl"):
     """ Apply fit_on_text on preprocessed data """
     try:
         train_data["comment_text"]=train_data["comment_text"].fillna("").astype(str)
@@ -86,10 +103,13 @@ def encode_labels(train_data:pd.DataFrame,test_data:pd.DataFrame):
 def main():
     
     try:
+        params=load_params(params_path="params.yaml")
+        max_len=params["feature_engineering"]["max_len"]
+        num_words=params["feature_engineering"]["num_words"]
         train_df=load_data("data/preprocess/train_preprocessed.csv")
         test_df=load_data("data/preprocess/test_preprocessed.csv")
         
-        x_train_pad,x_test_pad=token(train_df,test_df)
+        x_train_pad,x_test_pad=token(train_df,test_df,num_words=num_words,max_len=max_len)
         
         y_train,y_test=encode_labels(train_df,test_df)
         

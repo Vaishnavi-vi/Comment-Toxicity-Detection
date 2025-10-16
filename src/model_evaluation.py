@@ -4,6 +4,7 @@ import logging
 from tensorflow.keras.models import load_model #type:ignore
 from sklearn.metrics import  accuracy_score,precision_score,recall_score,f1_score
 import json
+import yaml
 
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -24,6 +25,7 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
+
 
 def predict():
     try:
