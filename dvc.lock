@@ -1,0 +1,130 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: 20939523f45ad2ba9f8b0dfadd878435
+      size: 3174
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 335fb43824e766bc51cbffb78cb0ae36.dir
+      size: 40282469
+      nfiles: 2
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 335fb43824e766bc51cbffb78cb0ae36.dir
+      size: 40282469
+      nfiles: 2
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: 64179c59239a1fc9da650a56a11d0105
+      size: 3084
+    outs:
+    - path: data/preprocess
+      hash: md5
+      md5: 8132c7ddeea5ce5bfe64396405942fbb.dir
+      size: 24872250
+      nfiles: 2
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/preprocess
+      hash: md5
+      md5: 8132c7ddeea5ce5bfe64396405942fbb.dir
+      size: 24872250
+      nfiles: 2
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: fcc53a0e1aace2022d495c71e0a0eb6b
+      size: 3834
+    outs:
+    - path: artifacts/tokenizer.pkl
+      hash: md5
+      md5: 3ee492f814ccdac8fcb8d126cecef1dc
+      size: 7278185
+    - path: artifacts/x_test_pad.npy
+      hash: md5
+      md5: a64ba4cf2ba9dfa3812bfde6e24df8cd
+      size: 8000128
+    - path: artifacts/x_train_pad.npy
+      hash: md5
+      md5: 8f0d66dc5f854f4a551ad146e18867fb
+      size: 32000128
+    - path: artifacts/y_test.npy
+      hash: md5
+      md5: c94a3e5f1e5a83a6b83c5037b5fa49e3
+      size: 160128
+    - path: artifacts/y_train.npy
+      hash: md5
+      md5: 96e82ab866c5447e742a5f4de63e29e5
+      size: 640128
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - path: artifacts/tokenizer.pkl
+      hash: md5
+      md5: 3ee492f814ccdac8fcb8d126cecef1dc
+      size: 7278185
+    - path: artifacts/x_test_pad.npy
+      hash: md5
+      md5: a64ba4cf2ba9dfa3812bfde6e24df8cd
+      size: 8000128
+    - path: artifacts/x_train_pad.npy
+      hash: md5
+      md5: 8f0d66dc5f854f4a551ad146e18867fb
+      size: 32000128
+    - path: artifacts/y_test.npy
+      hash: md5
+      md5: c94a3e5f1e5a83a6b83c5037b5fa49e3
+      size: 160128
+    - path: artifacts/y_train.npy
+      hash: md5
+      md5: 96e82ab866c5447e742a5f4de63e29e5
+      size: 640128
+    - path: src/model_training.py
+      hash: md5
+      md5: 134d9d4acb0c7ca6c29c74bd10a1e372
+      size: 2515
+    outs:
+    - path: artifacts/cnn_model.h5
+      hash: md5
+      md5: fec41b0c5800dedecb888a17c0bbf55c
+      size: 6907616
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: artifacts/cnn_model.h5
+      hash: md5
+      md5: fec41b0c5800dedecb888a17c0bbf55c
+      size: 6907616
+    - path: artifacts/x_test_pad.npy
+      hash: md5
+      md5: a64ba4cf2ba9dfa3812bfde6e24df8cd
+      size: 8000128
+    - path: artifacts/x_train_pad.npy
+      hash: md5
+      md5: 8f0d66dc5f854f4a551ad146e18867fb
+      size: 32000128
+    - path: artifacts/y_test.npy
+      hash: md5
+      md5: c94a3e5f1e5a83a6b83c5037b5fa49e3
+      size: 160128
+    - path: artifacts/y_train.npy
+      hash: md5
+      md5: 96e82ab866c5447e742a5f4de63e29e5
+      size: 640128
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 89dc59ab0b90d567b3e951dc7b2481fe
+      size: 3101
+    outs:
+    - path: artifacts/metrics.json
+      hash: md5
+      md5: dcbe80d3e742ef50d1d9d49576a21ab9
+      size: 171

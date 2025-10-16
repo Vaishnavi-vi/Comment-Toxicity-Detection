@@ -6,6 +6,7 @@ artifacts
 data
 envv
 logs
+projectflow.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
