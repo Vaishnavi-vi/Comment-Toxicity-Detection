@@ -6,7 +6,7 @@ git add, commit, push
 
 Setting up dvc pipeline without params
 5.Create dvc.yaml file and add stages to it
-6. dvc init then do dvc repro to test the pipeline automation (Check dvc dag)
+6. dvc init then do dvc repro to test the pipeline automation (Check dvc dag) or apply dvc repro --force
 6. git add commit push
 
 Setting up dvc pipeline with parameters 
@@ -36,3 +36,25 @@ def load_params(params_path:str)->dict:
         raise
 
 Add to main
+
+Experiments with dvc 
+12 pip install dvclive
+13 Add dvc live code blcock(mention below)
+14 Do "dvc exp run" it will create a new dvc.yaml (if laready not there) and dvc directory (each run will be considered as an experiments)
+15 Do "dvc exp show" on terminal to see the experiments or use extension on vscode
+16 Do dvc exp remove {exp_name} to remove exp (optional) "dvc exp apply" {exp_name} to reproduce prev exp
+17 Change params re-run code and (produce experiments)
+18 Now add git, add, commit ,push
+
+
+dvclive code block:
+1 import dvc live and yaml
+2. from dvclive import live 
+import yaml
+Add load_params function and initiate "params" var in main
+3 Add below code to main:
+with Live(save_dvc_exp=True)  as live:
+love.log_metric("accuracy",accuracy_score(y_test,y_pred))
+
+live.log_params(param)
+3. dvc exp run

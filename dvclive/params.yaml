@@ -1,0 +1,9 @@
+data_ingestion:
+  test_size: 0.4
+feature_engineering:
+  num_words: 10000
+  max_len: 100
+model_training:
+  vocab_size: 10000
+  max_len: 100
+  output_dim: 100

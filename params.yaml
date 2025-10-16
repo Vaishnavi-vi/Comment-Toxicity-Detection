@@ -1,12 +1,12 @@
 data_ingestion: 
-  test_size: 0.20
+  test_size: 0.40
 
 feature_engineering :  
-   num_words: 5000          #maximum number of words for tokenize
+   num_words: 10000    #maximum number of words for tokenize
    max_len: 100          #maximum sequence length for padding
 
 model_training :
-  vocab_size: 5000           #must match num_words in feature engineering
+  vocab_size: 10000        #must match num_words in feature engineering
   max_len: 100             #must match max_len in faeture engineering 
   output_dim: 100           #embedding dim or output layer units
 
