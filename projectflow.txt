@@ -1,7 +1,23 @@
 #Building Pipeline
 1. Create a Github and Clone it in local (Add Experiments)
-2. Create src folder along with all components (run individually)
-3. Add Data, models, reports directories to gitignore file
+
+___________________mongodb setup______________________________________
+2. Sign up to mongodb atlas and create a new project by just providing it a name and then next next create
+3. Organization-> project-> Cluster
+3. From "create a cluster" screen hit "create",select mo service keeping other service as default , hit create "deployment"
+4. Set up user name and password and then create db user->close
+user_name=vaishnavibarolia_db_user
+password=rDpnzMgseYw6bdnA
+5. Go to network access and click on  add  ip address -"0.0.0.0/0" so that we can access it from anywhere and click allow access from anywhere and then click confirm 
+6. Go back to project click on Get Connection String and select drivers->> python 3.6 or later version
+---> copy and save the connection string 
+----connection string= mongodb+srv://vaishnavibarolia_db_user:<db_password>@cluster0.b5qy2gy.mongodb.net/?appName=Cluster0
+7. Add mongodb_setup.ipynb file to experiments and push your data to mongodb
+8. Go to mongodb atlas >> Data base>> browse collection >> see your data in key value pair 
+_______________mongodb setup completed____________________________________
+
+9. Create src folder along with all components (run individually)
+10. Add Data, models, reports directories to gitignore file
 git add, commit, push
 
 Setting up dvc pipeline without params
@@ -54,7 +70,18 @@ import yaml
 Add load_params function and initiate "params" var in main
 3 Add below code to main:
 with Live(save_dvc_exp=True)  as live:
-love.log_metric("accuracy",accuracy_score(y_test,y_pred))
+live.log_metric("accuracy",accuracy_score(y_test,y_pred))
 
 live.log_params(param)
 3. dvc exp run
+
+Adding a console s3 storage to DVC:
+1. Login to AWS console
+2. Create an IAM user 
+3. Create S3 (enter unique name and create)
+4. pip install dvc s3
+5. pip install awscii
+6 aws configure
+7. dvc remote add -d dvcstore s3://bucketname
+8 dvc commit-push the exp outcome that you want to keep
+9 Finally git add commit push

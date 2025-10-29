@@ -2,11 +2,14 @@
 Experiments/dataset.csv
 Experiments/toxic_cnn_model.h5
 Experiments/tokenizer.pkl
+Experiments/mongodb_setup.ipynb
 artifacts
+mlruns
 data
 envv
 logs
 projectflow.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

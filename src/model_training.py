@@ -3,9 +3,16 @@ from tensorflow.keras.layers import Conv1D,Embedding,Dense,Dropout,GlobalMaxPool
 from keras.callbacks import EarlyStopping,ModelCheckpoint #type:ignore
 import os
 import logging
-import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+import mlflow
+import mlflow.keras
+
+mlflow.set_tracking_uri("file:///C:/Users/Dell/OneDrive - Havells/Desktop/Comment-Toxicity-Detection/mlruns")
+
+# Set experiment name
+mlflow.set_experiment("CNN_Toxicity_Classification")
 
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -77,8 +84,51 @@ def train_model():
         
         #checkpoint
         model_check=ModelCheckpoint("artifacts/cnn_model.h5",save_best_only=True,monitor="accuracy",mode="max")
+        
+        with mlflow.start_run():
+            #log parameters
+            mlflow.log_param("vocab_size",vocab_size)
+            mlflow.log_param("max_len", input_length)
+            mlflow.log_param("output_dim", output_dim)
         #fit the model
-        history=model.fit(x_train,y_train,epochs=15,batch_size=32,validation_data=(x_test,y_test),callbacks=[early_stopping,model_check])
+            history=model.fit(x_train,y_train,epochs=15,batch_size=32,validation_data=(x_test,y_test),callbacks=[early_stopping,model_check])
+        #log training metrics
+            for epoch in range(len(history.history["loss"])):
+                mlflow.log_metric("loss", history.history["loss"][epoch], step=epoch)
+                mlflow.log_metric("val_loss", history.history["val_loss"][epoch], step=epoch)
+                mlflow.log_metric("accuracy", history.history["accuracy"][epoch], step=epoch)
+                mlflow.log_metric("val_accuracy", history.history["val_accuracy"][epoch], step=epoch)
+   
+        #log model
+            mlflow.keras.log_model(model,"cnn_model")
+        #loss log_artifacts
+            plt.figure(figsize=(8,5))
+            plt.plot(history.history["loss"], label="train")
+            plt.plot(history.history["val_loss"], label="val")
+            plt.xlabel("Epochs")
+            plt.ylabel("Loss")
+            plt.title("Training vs Validation Loss")
+            plt.legend()
+            plt.grid(True)
+            loss_plot_path = "artifacts/loss_plot.png"
+            plt.savefig(loss_plot_path)
+            plt.close()
+        
+            mlflow.log_artifact(loss_plot_path)
+        #accuracy log_artifacts
+            plt.figure(figsize=(8,5))
+            plt.plot(history.history["accuracy"], label="train")
+            plt.plot(history.history["val_accuracy"], label="val")
+            plt.xlabel("Epochs")
+            plt.ylabel("Loss")
+            plt.title("Training vs Validation Accuracy")
+            plt.legend()
+            plt.grid(True)
+            accuracy_plot_path = "artifacts/acc_plot.png"
+            plt.savefig(accuracy_plot_path)
+            plt.close()
+        
+            mlflow.log_artifact(accuracy_plot_path)
         
         logger.debug("Model training completed Successfully!!")
     except Exception as e:

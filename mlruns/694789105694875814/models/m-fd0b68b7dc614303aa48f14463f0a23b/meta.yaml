@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/Dell/OneDrive - Havells/Desktop/Comment-Toxicity-Detection/mlruns/694789105694875814/models/m-fd0b68b7dc614303aa48f14463f0a23b/artifacts
+creation_timestamp: 1761305094762
+experiment_id: '694789105694875814'
+last_updated_timestamp: 1761305108503
+model_id: m-fd0b68b7dc614303aa48f14463f0a23b
+model_type: null
+name: cnn_model
+source_run_id: eb54b65235ef41c39463a744c16776ed
+status: 2
+status_message: null

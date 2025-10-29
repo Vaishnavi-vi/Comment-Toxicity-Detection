@@ -3,6 +3,7 @@ import os
 from sklearn.model_selection import train_test_split
 import logging
 import yaml
+import pymongo
 
 #Ensure the log_dir exists
 log_dir="logs"
@@ -49,7 +50,6 @@ def load_data(data_url:str)->pd.DataFrame:
     """Load data from csv file"""
     try:
         df=pd.read_csv(data_url,engine="python",on_bad_lines="skip")
-        df=df.sample(100000,random_state=42)
         logger.debug("Data loaded from %s",data_url)
         return df
     except pd.errors.ParserError as e:
@@ -75,6 +75,59 @@ def pre_process(df:pd.DataFrame)->pd.DataFrame:
     except Exception as e:
         logger.error("Unexpected error occurred %s",e)
         raise
+
+    
+def upload_to_mongodb(df:pd.DataFrame,params:dict):
+    try:
+        CONNECTION_URL=params["mongodb"]["CONNECTION_URL"]
+        DB_NAME=params["mongodb"]["DB_NAME"]
+        COLLECTION_NAME=params["mongodb"]["COLLECTION_NAME"]
+        batch_size=params["mongodb"].get("batch_size",10000)
+        
+        client=pymongo.MongoClient(CONNECTION_URL)
+        data_base=client[DB_NAME]
+        
+        if COLLECTION_NAME in data_base.list_collection_names():
+            data_base.drop_collection(COLLECTION_NAME)
+            logger.debug("Old collection data dropped scuucessfully!!!: %s")
+            
+        collection=data_base[COLLECTION_NAME]
+        logger.debug("Comnnected to mongodb atlas")
+        
+        records=df.to_dict(orient="records")
+        
+        for i in range(0,len(records),batch_size):
+            collection.insert_many(records[i:i+batch_size])
+            logger.debug(f"Inserted batch")
+        
+        logger.debug("All data uploaded to mongo_db")
+    except Exception as e:
+        logger.error("Error uploading to mongodb: %s",e)
+        raise
+            
+def load_from_mongodb(params:dict)->pd.DataFrame:
+    try:
+        CONNECTION_URL=params["mongodb"]["CONNECTION_URL"]
+        DB_NAME=params["mongodb"]["DB_NAME"]
+        COLLECTION_NAME=params["mongodb"]["COLLECTION_NAME"]
+        batch_size=params["mongodb"].get("batch_size",1000)
+        
+        client=client=pymongo.MongoClient(CONNECTION_URL)
+        data_base=client[DB_NAME]
+        collection=data_base[COLLECTION_NAME]
+        logger.debug("Comnnected to mongodb atlas for loading data")
+        
+        data=list(collection.find())
+        df=pd.DataFrame(data)
+        if "_id" in df.columns:
+            df.drop("_id", axis=1, inplace=True)
+        logger.debug("Data loaded from mongodb successfully!!!")
+        return df
+    except Exception as e:
+        logger.error("Error loading data from nongodb :%s",e)
+        raise
+        
+               
     
 def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str) -> None:
     """Save train and test dataset"""
@@ -100,7 +153,9 @@ def main():
         data_url="C:\\Users\\Dell\\OneDrive - Havells\\Desktop\\Comment-Toxicity-Detection\\Experiments\\dataset.csv"
         df=load_data(data_url=data_url)
         final_df=pre_process(df)
-        train_data,test_data=train_test_split(final_df,test_size=test_size,random_state=42)
+        upload_to_mongodb(final_df,params)
+        df_from_mongodb=load_from_mongodb(params)
+        train_data,test_data=train_test_split(df_from_mongodb,test_size=test_size,random_state=42)
         save_data(train_data=train_data,test_data=test_data,data_path="./data")
     except Exception as e:
         logger.error("Unexpected Error occurred %s",e)

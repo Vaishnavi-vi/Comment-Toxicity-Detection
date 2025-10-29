@@ -1,0 +1,15 @@
+creation_timestamp: 1761758883263
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1761758883263
+model_id: m-cbfc021cc90741eabcdbc318b9194865
+name: Toxic_Comment_Classifier
+run_id: 683b9d323d4e4c55a2dafd595a28b437
+run_link: null
+source: models:/m-cbfc021cc90741eabcdbc318b9194865
+status: READY
+status_message: null
+storage_location: file:///C:/Users/Dell/OneDrive - Havells/Desktop/Comment-Toxicity-Detection/mlruns/694789105694875814/models/m-cbfc021cc90741eabcdbc318b9194865/artifacts
+user_id: null
+version: 1
