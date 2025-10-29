@@ -4,7 +4,6 @@ Experiments/toxic_cnn_model.h5
 Experiments/tokenizer.pkl
 Experiments/mongodb_setup.ipynb
 artifacts
-mlruns
 data
 envv
 logs
