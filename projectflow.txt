@@ -63,14 +63,7 @@ Experiments with dvc
 18 Now add git, add, commit ,push
 
 
-dvclive code block:
-1 import dvc live and yaml
-2. from dvclive import live 
-import yaml
-Add load_params function and initiate "params" var in main
-3 Add below code to main:
-with Live(save_dvc_exp=True)  as live:
-live.log_metric("accuracy",accuracy_score(y_test,y_pred))
+
 
 live.log_params(param)
 3. dvc exp run
@@ -85,3 +78,52 @@ Adding a console s3 storage to DVC:
 7. dvc remote add -d dvcstore s3://bucketname
 8 dvc commit-push the exp outcome that you want to keep
 9 Finally git add commit push
+
+
+_----------------------------------------
+
+Place fastapp for fastapi and streamlit for frontend and then Dockerize
+Create docker file for fastapi and streamlit individually 
+
+docker build -t vaishnavibarolia/comment_toxicity:fastapi -f fastapp/Dockerfile .
+docker build -t vaishnavibarolia/comment_toxicity:streamlit -f frontend/Dockerfile .
+connect fastapp dockerfile and streamlit dockerfile with docker-compose.yaml
+docker-compose yamlcode:
+with services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: fastapp/Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    networks:
+      - app_net
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: streamlit_app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - fastapi
+    networks:
+      - app_net
+
+networks:
+  app_net:
+
+  write docker-compose up --build in terminal to connect fastapp dockerfile and streamlit docker and see the reault in local host
+  and in streamlit frontend give url as " http//:fastapi:8000/predict"
+
+  docker run -p 8000:8000 vaishnavibarolia/comment_toxicity:fastapi
+  
+  docker run -p 8501:8501 vaishnavibarolia/comment_toxicity:streamlit
+
+push to dcker hub
+
+docker push vaishnavibarolia/comment_toxicity:fastapi
+docker push vaishnavibarolia/comment_toxicity:streamlit
+

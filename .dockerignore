@@ -1,0 +1,17 @@
+mlruns
+artifacts/acc_plot.png
+artifacts/confusion_matrix.png
+artifacts/loss_plot.png
+artifacts/metrics.json
+artifacts/roc_curve.png
+artifacts/x_test_pad.npy
+artifacts/x_train_pad.npy
+artifacts/y_test.npy
+artifacts/y_train.npy
+.dvc
+.dvc/cache/
+__pycache__/
+logs
+venv/
+.git
+.gitignore

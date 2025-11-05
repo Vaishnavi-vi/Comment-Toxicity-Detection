@@ -8,6 +8,7 @@ data
 envv
 logs
 projectflow.txt
+mlruns
 
 
 # Byte-compiled / optimized / DLL files
