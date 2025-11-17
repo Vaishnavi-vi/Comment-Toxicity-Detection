@@ -3,7 +3,7 @@ import pickle
 from PIL import Image
 import requests
 
-# url_link="http://127.0.0.1:8000/predict"  #when manually check streamlit 
+# url_link= "http://127.0.0.1:8000/predict"  #when manually check streamlit 
 url_link="http://fastapi:8000/predict"
 
 
